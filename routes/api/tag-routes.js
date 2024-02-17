@@ -40,10 +40,10 @@ try {
 router.post('/', async (req, res) => {
 try {
     const newTag = await Tag.create({
-      tag_name: req.body.tagName
+      tag_name: req.body.name
     });
 
-    res.status(200).json(newTag);
+    res.status(200).json({message: "Tag Added!"});
     console.log('Tag created!');
 
   } catch (err) {
@@ -54,7 +54,7 @@ try {
 router.put('/:id', async (req, res) => {
   try {
     const updateTag = await Tag.update({
-      tag_name: req.body.tagName
+      tag_name: req.body.name
     },
     {
       where: {
@@ -69,7 +69,7 @@ router.put('/:id', async (req, res) => {
       return;
     };
 
-    res.status(200).json(updateTag);
+    res.status(200).json({ message: "Tag Updated!" });
     console.log('Tag updated!');
     
   } catch (err) {
@@ -89,7 +89,7 @@ router.delete('/:id', async (req, res) => {
       return;
     }
 
-    res.status(200).json(deleteTag);
+    res.status(200).json({ message: "Tag Removed!" });
     console.log('Tag deleted!');
     
   } catch (err) {

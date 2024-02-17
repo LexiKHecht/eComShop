@@ -52,8 +52,8 @@ router.post('/', (req, res) => {
   Product.create(req.body)
     .then((product) => {
       // if there's product tags, we need to create pairings to bulk create in the ProductTag model
-      if (req.body.tagIds.length) {
-        const productTagIdArr = req.body.tagIds.map((tag_id) => {
+      if (req.body.tags.length) {
+        const productTagIdArr = req.body.tags.map((tag_id) => {
           return {
             product_id: product.id,
             tag_id,
@@ -62,9 +62,11 @@ router.post('/', (req, res) => {
         return ProductTag.bulkCreate(productTagIdArr);
       }
       // if no product tags, just respond
-      res.status(200).json(product);
+      res.status(200).json({ message: "Product Added!" });
     })
-    .then((productTagIds) => res.status(200).json(productTagIds))
+    .then((productTagIds) =>
+      res.status(200).json({ message: "Product Added!" })
+    )
     .catch((err) => {
       console.log(err);
       res.status(400).json(err);
@@ -80,14 +82,14 @@ router.put('/:id', (req, res) => {
     },
   })
     .then((product) => {
-      if (req.body.tagIds && req.body.tagIds.length) {
+      if (req.body.tags && req.body.tags.length) {
         
         ProductTag.findAll({
           where: { product_id: req.params.id }
         }).then((productTags) => {
           // create filtered list of new tag_ids
           const productTagIds = productTags.map(({ tag_id }) => tag_id);
-          const newProductTags = req.body.tagIds
+          const newProductTags = req.body.tags
           .filter((tag_id) => !productTagIds.includes(tag_id))
           .map((tag_id) => {
             return {
@@ -98,7 +100,7 @@ router.put('/:id', (req, res) => {
 
             // figure out which ones to remove
           const productTagsToRemove = productTags
-          .filter(({ tag_id }) => !req.body.tagIds.includes(tag_id))
+          .filter(({ tag_id }) => !req.body.tags.includes(tag_id))
           .map(({ id }) => id);
                   // run both actions
           return Promise.all([
@@ -108,10 +110,9 @@ router.put('/:id', (req, res) => {
         });
       }
 
-      return res.json(product);
+      return res.json({ message: "Product Updated!" });
     })
     .catch((err) => {
-      // console.log(err);
       res.status(400).json(err);
     });
 });
@@ -128,7 +129,7 @@ try {
       return;
     }
 
-    res.status(200).json(deleteProd);
+    res.status(200).json({ message: "Product Removed!" });
     console.log("Product deleted!");
     
   } catch (err) {
